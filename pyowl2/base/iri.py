@@ -99,7 +99,7 @@ class IRI(OWLAnnotationSubject, OWLAnnotationValue):
         :rtype: URIRef
         """
 
-        assert isinstance(self.namespace, Namespace)
+        # assert isinstance(self.namespace, Namespace)
         return (
             self.value if isinstance(self.value, URIRef) else self.namespace[self.value]
         )

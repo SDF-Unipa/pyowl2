@@ -47,7 +47,7 @@ from owlready2.base import (
     _universal_iri_2_abbrev,
 )
 from rdflib import RDFS, XSD, BNode, Graph, Literal, Namespace, URIRef
-from rdflib.namespace import OWL, RDF
+from rdflib.namespace import OWL, RDF, split_uri
 
 from pyowl2.abstracts.annotation_axiom import OWLAnnotationAxiom
 from pyowl2.abstracts.assertion import OWLAssertion
@@ -1785,6 +1785,13 @@ class RDFXMLGetter:
 
         return self._annotation_assertions
 
+    def _get_element_namespace(self, element: typing.Any) -> str:
+        return (
+            Namespace(split_uri(element.iri)[0])
+            if hasattr(element, "namespace") and element.namespace
+            else self.namespace
+        )
+
     def get(self, element: AxiomsType) -> list[EntityClass]:
         """
         Retrieves a list of ontology entities that correspond to a specific axiom type, identified by the provided `AxiomsType` enumeration value. Acting as a dispatcher, this method delegates the extraction logic to specialized internal handlers for each supported category, such as classes, properties, or logical restrictions. For the `DECLARATIONS` type, it aggregates entities from all major categories, including classes, object and datatype properties, individuals, and datatypes. If the input does not match a known axiom type, a `ValueError` is raised.
@@ -2002,7 +2009,7 @@ class RDFXMLGetter:
             self.classes[entity] = OWLClass(
                 IRI(
                     (
-                        self.namespace
+                        self._get_element_namespace(entity)
                         if not (is_nothing or is_thing)
                         else Namespace(OWL._NS)
                     ),
@@ -2676,7 +2683,12 @@ class RDFXMLGetter:
             return None
         # if isinstance(entity, DatatypeClass):
         if entity not in self.datatypes:
-            self.datatypes[entity] = OWLDatatype(IRI(self.namespace, entity.name))
+            self.datatypes[entity] = OWLDatatype(
+                IRI(
+                    self._get_element_namespace(entity),
+                    entity.name,
+                )
+            )
         # elif isinstance(entity, ConstrainedDatatype):
         #     for subcls in entity.subclasses():
         #         if subcls in self.datatypes:
@@ -4230,7 +4242,7 @@ class RDFXMLGetter:
         if property not in self.object_properties:
             self.object_properties[property] = OWLObjectProperty(
                 IRI(
-                    self.namespace,
+                    self._get_element_namespace(property),
                     property.name,
                 )
             )
@@ -4291,7 +4303,7 @@ class RDFXMLGetter:
         if property not in self.data_properties:
             self.data_properties[property] = OWLDataProperty(
                 IRI(
-                    self.namespace,
+                    self._get_element_namespace(property),
                     property.name,
                 )
             )
@@ -4352,7 +4364,7 @@ class RDFXMLGetter:
         if property not in self.annotation_properties:
             self.annotation_properties[property] = OWLAnnotationProperty(
                 IRI(
-                    self.namespace,
+                    self._get_element_namespace(property),
                     property.name,
                 )
             )
@@ -4418,7 +4430,7 @@ class RDFXMLGetter:
             )
             self.individuals[individual] = cls_func(
                 IRI(
-                    self.namespace,
+                    self._get_element_namespace(individual),
                     individual.name,
                 )
             )
@@ -4497,14 +4509,20 @@ class RDFXMLGetter:
             source = (
                 self.to_owl_individual(subject)
                 if is_named_individual(subject)
-                else IRI(self.namespace, subject)
+                else IRI(
+                    self._get_element_namespace(subject),
+                    subject,
+                )
             )
             ann_property = self.to_owl_annotation_property(property)
             value = (
                 self.to_owl_individual(value)
                 if is_named_individual(value)
                 else (
-                    IRI(self.namespace, value)
+                    IRI(
+                        self._get_element_namespace(value),
+                        value,
+                    )
                     if isinstance(value, URIRef)
                     else OWLLiteral(value)
                 )
@@ -4588,7 +4606,10 @@ class RDFXMLGetter:
         if property not in self.annotation_property_domains:
             self.annotation_property_domains[property] = OWLAnnotationPropertyDomain(
                 self.to_owl_annotation_property(property),
-                IRI(self.namespace, domain),
+                IRI(
+                    self._get_element_namespace(property),
+                    domain,
+                ),
                 annotations,
             )
         return self.annotation_property_domains[property]
@@ -4624,7 +4645,10 @@ class RDFXMLGetter:
                 return None
             self.annotation_property_ranges[property] = OWLAnnotationPropertyRange(
                 ann_property,
-                IRI(self.namespace, range),
+                IRI(
+                    self._get_element_namespace(property),
+                    range,
+                ),
                 annotations,
             )
         return self.annotation_property_ranges[property]
@@ -4670,7 +4694,7 @@ class RDFXMLGetter:
                 return None
             self.general_axioms[key] = OWLGeneralClassAxiom(
                 left_expr,
-                IRI(self.namespace, property),
+                IRI(self._get_element_namespace(property), property),
                 right_expr,
                 annotations,
             )
@@ -5820,7 +5844,7 @@ class RDFXMLGetter:
                         continue
                     if len(union.Classes) == 0:
                         self.to_owl_equivalent_classes(
-                            [curr_cls, OWLClass(IRI(self.namespace, OWL.Nothing))]
+                            [curr_cls, OWLClass(IRI(Namespace(OWL._NS), OWL.Nothing))]
                         )
                     elif len(union.Classes) == 1:
                         self.to_owl_equivalent_classes([curr_cls, union.Classes[0]])
@@ -7014,7 +7038,7 @@ class RDFXMLGetter:
                     continue
                 if p in standard_props:
                     self.annotation_properties[p] = OWLAnnotationProperty(
-                        IRI(self.namespace, p)
+                        IRI(self._get_element_namespace(p), p)
                     )
                 else:
                     p = [
@@ -7032,7 +7056,7 @@ class RDFXMLGetter:
                 elif isinstance(o, Literal):
                     o = OWLLiteral(o)
                 else:
-                    o = IRI(self.namespace, o)
+                    o = IRI(self._get_element_namespace(o), o)
 
                 self.annotations[(s, p, o)] = OWLAnnotation(
                     self.annotation_properties[p],
