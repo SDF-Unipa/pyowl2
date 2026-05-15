@@ -1,5 +1,6 @@
 import enum
 import inspect
+import logging
 import typing
 
 from owlready2 import (
@@ -413,6 +414,7 @@ class AxiomsType(enum.StrEnum):
     ANNOTATION_PROPERTY_DOMAINS = enum.auto()
     ANNOTATION_PROPERTY_RANGES = enum.auto()
 
+logger = logging.getLogger(__name__)
 
 # @utils.timer_decorator
 class RDFXMLGetter:
@@ -6131,7 +6133,7 @@ class RDFXMLGetter:
             FILTER(?class1 != ?class2)
         }
         """
-        print("Warning: OWLDataComplementOf is not handled")
+        logger.warning("OWLDataComplementOf is not handled")
         for cls in self.graph.query(query):
             data_range = self.ontology.search_one(iri=cls[1])
             if data_range is None:

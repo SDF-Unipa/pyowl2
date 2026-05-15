@@ -1,3 +1,11 @@
+__all__ = [
+    "IRI",
+    "OWLAnnotationProperty",
+    "OWLDatatype",
+    "OWLClass",
+    "OWLAnnotation",
+]
+
 from .iri import IRI
 from .annotation_property import OWLAnnotationProperty
 from .datatype import OWLDatatype

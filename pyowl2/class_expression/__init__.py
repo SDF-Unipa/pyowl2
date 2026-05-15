@@ -1,3 +1,23 @@
+__all__ = [
+    "OWLDataAllValuesFrom",
+    "OWLDataExactCardinality",
+    "OWLDataHasValue",
+    "OWLDataMaxCardinality",
+    "OWLDataMinCardinality",
+    "OWLDataSomeValuesFrom",
+    "OWLObjectAllValuesFrom",
+    "OWLObjectComplementOf",
+    "OWLObjectExactCardinality",
+    "OWLObjectHasSelf",
+    "OWLObjectHasValue",
+    "OWLObjectIntersectionOf",
+    "OWLObjectMaxCardinality",
+    "OWLObjectMinCardinality",
+    "OWLObjectOneOf",
+    "OWLObjectSomeValuesFrom",
+    "OWLObjectUnionOf",
+]
+
 from .data_all_values_from import OWLDataAllValuesFrom
 from .data_exact_cardinality import OWLDataExactCardinality
 from .data_has_value import OWLDataHasValue

@@ -1,3 +1,10 @@
+__all__ = [
+    "OWLDisjointClasses",
+    "OWLDisjointUnion",
+    "OWLEquivalentClasses",
+    "OWLSubClassOf",
+]
+
 from .disjoint_classes import OWLDisjointClasses
 from .disjoint_union import OWLDisjointUnion
 from .equivalent_classes import OWLEquivalentClasses

@@ -1,3 +1,20 @@
+__all__ = [
+    "OWLAsymmetricObjectProperty",
+    "OWLDisjointObjectProperties",
+    "OWLEquivalentObjectProperties",
+    "OWLFunctionalObjectProperty",
+    "OWLInverseObjectProperties",
+    "OWLInverseFunctionalObjectProperty",
+    "OWLIrreflexiveObjectProperty",
+    "OWLObjectPropertyChain",
+    "OWLObjectPropertyDomain",
+    "OWLObjectPropertyRange",
+    "OWLReflexiveObjectProperty",
+    "OWLSubObjectPropertyOf",
+    "OWLSymmetricObjectProperty",
+    "OWLTransitiveObjectProperty",
+]
+
 from .asymmetric_object_property import OWLAsymmetricObjectProperty
 from .disjoint_object_properties import OWLDisjointObjectProperties
 from .equivalent_object_properties import OWLEquivalentObjectProperties

@@ -1,3 +1,4 @@
+import logging
 import typing
 
 from owlready2 import Ontology, World
@@ -16,6 +17,8 @@ from pyowl2.utils.datatype import OWLFullDataRange
 from pyowl2.utils.individual import OWLFullIndividual
 from pyowl2.utils.object_property import OWLFullObjectProperty
 from pyowl2.utils.thing import OWLFullClass
+
+logger = logging.getLogger(__name__)
 
 
 class OWLOntology:
@@ -60,7 +63,7 @@ class OWLOntology:
         self._ontology_iri: typing.Optional[URIRef] = (
             base_iri if isinstance(base_iri, URIRef) else str(base_iri.to_uriref())
         )
-        self._axioms: list[OWLAxiom] = None
+        self._axioms: list[OWLAxiom] = []
         self._ontology_annotations: typing.Optional[list[OWLAnnotation]] = None
         self._world: World = World()  # default_world
         if ontology_path is None:
@@ -68,7 +71,7 @@ class OWLOntology:
             try:
                 self._ontology.set_base_iri(self.ontology_iri, rename_entities=True)
             except Exception as e:
-                print(e)
+                logger.warning("Failed to set base IRI: %s", e)
             self._clear: RDFXMLClear = RDFXMLClear(self._ontology)
             self._clear.clear()
         else:
@@ -163,21 +166,16 @@ class OWLOntology:
 
         return self._getter
 
-    def add_axiom(self, axiom: typing.Any) -> bool:
+    def add_axiom(self, axiom: typing.Any) -> None:
         """
-        Adds a logical axiom to the ontology by delegating the mapping process to the internal mapper object. This operation is performed within a context manager to ensure the underlying ontology resource is managed correctly during the modification. The method returns True to indicate the completion of the operation, but if the mapper fails to process the axiom, an exception will be raised, as the implementation does not include explicit error handling to return False.
+        Adds a logical axiom to the ontology by delegating the mapping process to the internal mapper object. This operation is performed within a context manager to ensure the underlying ontology resource is managed correctly during the modification.
 
         :param axiom: The logical construct or statement to be added to the ontology, such as a class or property assertion.
         :type axiom: typing.Any
-
-        :return: True, indicating that the axiom was successfully added to the ontology.
-
-        :rtype: bool
         """
 
         with self._ontology:
             self.mapper.map(axiom)
-        return True
         # try:
         #     with self._ontology:
         #         self.mapper.map(axiom)
@@ -186,16 +184,12 @@ class OWLOntology:
         #     print(e)
         #     return False
 
-    def add_axioms(self, axioms: list[OWLObject]) -> bool:
+    def add_axioms(self, axioms: list[OWLObject]) -> None:
         """
-        Adds a list of axioms to the ontology by iterating through the provided collection and mapping each logical statement to the underlying structure. The method performs specialized processing for complex entity types—specifically object properties, data properties, classes, data ranges, and individuals—by decomposing them into their constituent parts, including declarations, annotations, domains, ranges, and any associated inner axioms. Axioms that do not match these specific types are mapped directly without decomposition. Each addition operation is wrapped in a context manager to ensure the ontology is properly managed during the modification process. The method returns True upon successfully processing the entire list, though it does not currently handle exceptions internally and will propagate errors if mapping fails.
+        Adds a list of axioms to the ontology by iterating through the provided collection and mapping each logical statement to the underlying structure. The method performs specialized processing for complex entity types—specifically object properties, data properties, classes, data ranges, and individuals—by decomposing them into their constituent parts, including declarations, annotations, domains, ranges, and any associated inner axioms. Axioms that do not match these specific types are mapped directly without decomposition. Each addition operation is wrapped in a context manager to ensure the ontology is properly managed during the modification process.
 
         :param axioms: A list of OWLObject instances representing logical statements to be added to the ontology. The method processes specific types—including object properties, data properties, classes, data ranges, and individuals—by mapping their declarations, domains, ranges, and inner axioms, while mapping other types directly.
         :type axioms: list[OWLObject]
-
-        :return: True if all axioms were successfully added to the ontology.
-
-        :rtype: bool
         """
 
         # try:
@@ -247,7 +241,6 @@ class OWLOntology:
                 else:
                     # If the axiom does not match any of the specific types (OWLFullObjectProperty, OWLFullDataProperty, OWLFullClass, OWLFullDataRange, OWLFullIndividual), it will be mapped directly to the ontology without additional processing. This allows for the inclusion of axioms that may not require special handling or that do not fit into the predefined categories, ensuring that a wide range of axioms can be added to the ontology as needed.
                     self.mapper.map(axiom)
-        return True
         # except Exception as e:
         #     print(e)
         #     return False
@@ -285,7 +278,7 @@ class OWLOntology:
                 self.mapper.map_owl_annotations(self._ontology_iri, annotations)
             return True
         except Exception as e:
-            print(e)
+            logger.error("Failed to add annotations: %s", e)
             return False
 
     def add_annotations_to_relation(
@@ -317,7 +310,7 @@ class OWLOntology:
                 self.mapper.map_owl_annotations_entities(a, property, b, annotations)
             return True
         except Exception as e:
-            print(e)
+            logger.error("Failed to add annotations to relation: %s", e)
             return False
 
     def add_annotation_to_element(
@@ -340,7 +333,7 @@ class OWLOntology:
                 self.mapper.map_owl_annotations(node, annotations)
             return True
         except Exception as e:
-            print(e)
+            logger.error("Failed to add annotation to element: %s", e)
             return False
 
     def get_axioms(self, axiom: AxiomsType) -> list[OWLObject]:
@@ -385,5 +378,5 @@ class OWLOntology:
             self._ontology.save(filepath, format=format)
             return True
         except Exception as e:
-            print(e)
+            logger.error("Failed to save ontology: %s", e)
             return False

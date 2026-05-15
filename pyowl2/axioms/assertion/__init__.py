@@ -1,3 +1,13 @@
+__all__ = [
+    "OWLClassAssertion",
+    "OWLDataPropertyAssertion",
+    "OWLDifferentIndividuals",
+    "OWLNegativeDataPropertyAssertion",
+    "OWLNegativeObjectPropertyAssertion",
+    "OWLObjectPropertyAssertion",
+    "OWLSameIndividual",
+]
+
 from .class_assertion import OWLClassAssertion
 from .data_property_assertion import OWLDataPropertyAssertion
 from .different_individuals import OWLDifferentIndividuals

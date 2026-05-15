@@ -1,4 +1,4 @@
-from .abstracts import *
+from .abstracts import *  # noqa: F403 — __all__ defined in abstracts/__init__.py
 from .base import *
 from .axioms import *
 from .class_expression import *

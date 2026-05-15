@@ -1,3 +1,10 @@
+__all__ = [
+    "OWLAnnotationAssertion",
+    "OWLAnnotationPropertyDomain",
+    "OWLAnnotationPropertyRange",
+    "OWLSubAnnotationPropertyOf",
+]
+
 from .annotation_assertion import OWLAnnotationAssertion
 from .annotation_property_domain import OWLAnnotationPropertyDomain
 from .annotation_property_range import OWLAnnotationPropertyRange

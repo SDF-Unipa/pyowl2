@@ -1,3 +1,12 @@
+__all__ = [
+    "OWLDataPropertyDomain",
+    "OWLDataPropertyRange",
+    "OWLDisjointDataProperties",
+    "OWLEquivalentDataProperties",
+    "OWLFunctionalDataProperty",
+    "OWLSubDataPropertyOf",
+]
+
 from .data_property_domain import OWLDataPropertyDomain
 from .data_property_range import OWLDataPropertyRange
 from .disjoint_data_properties import OWLDisjointDataProperties

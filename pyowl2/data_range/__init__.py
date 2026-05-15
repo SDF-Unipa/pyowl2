@@ -1,3 +1,12 @@
+__all__ = [
+    "OWLDataComplementOf",
+    "OWLDataIntersectionOf",
+    "OWLDataUnionOf",
+    "OWLDataOneOf",
+    "OWLDatatypeRestriction",
+    "OWLFacet",
+]
+
 from .data_complement_of import OWLDataComplementOf
 from .data_intersection_of import OWLDataIntersectionOf
 from .data_union_of import OWLDataUnionOf
