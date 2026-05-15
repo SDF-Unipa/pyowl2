@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyowl2"
-version = "1.0.5"
+version = "1.0.6"
 description = "A python implementation of the OWL 2 standard. See https://www.w3.org/TR/owl2-syntax/ and https://www.w3.org/TR/owl2-mapping-to-rdf/"
 license = "CC-BY-SA-4.0"
 readme = "README.md"
@@ -14,7 +14,7 @@ owlready2 = "^0.47"
 rdflib = "^7.1.4"
 tabulate = "^0.9.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^5.2"
 flake8 = "^4.0.1"
 pytest-cov = "^3.0.0"
